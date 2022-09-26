@@ -447,6 +447,14 @@ pub trait Labeller<'a,N,E> {
         None
     }
 
+    /// Maps `n` to one or more [graphviz attributes][1]. If `None`
+    /// is returned, no attribute is specified.
+    ///
+    /// [1]: https://graphviz.org/doc/info/attrs.html
+    fn node_attrs(&'a self, _node: &N) -> Option<Vec<(&'a str, &'a str)>> {
+        None
+    }
+
     /// Maps `n` to a label that will be used in the rendered output.
     /// The label need not be unique, and may be the empty string; the
     /// default is just the output from `node_id`.
@@ -979,6 +987,16 @@ pub fn render_opts<'a,
             text.push("[shape=");
             text.push(&shape);
             text.push("]");
+        }
+
+        if let Some(attrs) = g.node_attrs(n) {
+            for (name, value) in attrs {
+                text.push("[");
+                text.push(name);
+                text.push("=");
+                text.push(value);
+                text.push("]");
+            }
         }
 
         text.push(";");
